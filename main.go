@@ -28,12 +28,10 @@ func main() {
 
 	// Start Matches
 	for nMatch <= nbMatchs {
-		round := 0
 		for len(match.Robots) > 0 {
 			match.Update()
-			fmt.Printf("Match %d/%d:\tRound:%d\n", nMatch, nbMatchs, round)
+			fmt.Printf("Match %d/%d:\tRound:%d\n", nMatch, nbMatchs, match.Round)
 			fmt.Printf("%v\n", match)
-			round++
 		}
 		match = MakeMatch(20, 0.05, match.Genomes[len(match.Genomes)-1], 5)
 		nMatch += 1
