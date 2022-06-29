@@ -97,7 +97,7 @@ func (r *Robot) Move() {
 		tp.j += 1
 	}
 
-	if r.Match.Grid[tp.i][tp.j].Robot {
+	if r.Match.PosOk(tp) && r.Match.Grid[tp.i][tp.j].Robot {
 		return
 	}
 }
@@ -147,7 +147,11 @@ func (r *Robot) Update() {
 	r.Energy -= 2
 
 	if r.Match.GetCell(r.Pos).Energy {
-		r.Energy += 20
+		if r.Energy <= 80 {
+			r.Energy += 20
+		} else {
+			r.Energy = 100
+		}
 	}
 
 }

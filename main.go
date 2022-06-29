@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 
@@ -13,7 +14,6 @@ func main() {
 	if len(os.Args) > 1 {
 		nbMatchs, _ = strconv.Atoi(os.Args[1])
 	}
-
 	waio.Init()
 
 	// Robot Params
@@ -24,14 +24,18 @@ func main() {
 	firstGenome := waio.MakeGenome(ins, outs)
 
 	// Make Match
-	match := MakeMatch(50, 0.05, firstGenome, 5)
+	match := MakeMatch(20, 0.05, firstGenome, 5)
 
 	// Start Matches
 	for nMatch <= nbMatchs {
+		round := 0
 		for len(match.Robots) > 0 {
 			match.Update()
+			fmt.Printf("Match %d/%d:\tRound:%d\n", nMatch, nbMatchs, round)
+			fmt.Printf("%v\n", match)
+			round++
 		}
-		match = MakeMatch(50, 0.05, match.Genomes[len(match.Genomes)-1], 5)
+		match = MakeMatch(20, 0.05, match.Genomes[len(match.Genomes)-1], 5)
 		nMatch += 1
 	}
 }

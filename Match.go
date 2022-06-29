@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 
 	waio "github.com/PauGalopaDev/waioNEAT"
@@ -21,6 +22,10 @@ func (x *Pair) Add(y Pair) {
 	x.j += y.j
 }
 
+func (p *Pair) String() string {
+	return fmt.Sprintf("(%d,%d)", p.i, p.j)
+}
+
 type Cell struct {
 	Robot  bool
 	Energy bool
@@ -33,18 +38,47 @@ type Match struct {
 	Genomes []*waio.Genome
 }
 
+func (m *Match) String() string {
+	str := "Grid:\n"
+
+	var c string
+	for i := range m.Grid {
+		for j := range m.Grid[i] {
+			c = " "
+			if m.Grid[i][j].Energy {
+				c = "E"
+			}
+			if m.Grid[i][j].Robot {
+				c = "R"
+			}
+			str += fmt.Sprintf("[%s]", c)
+		}
+		str += "\n"
+	}
+	str += "\n"
+	str += fmt.Sprintf("Energy left:\t%d\n", m.Energy)
+	str += fmt.Sprintf("Robots left:\t%d\n", len(m.Robots))
+	str += "[Robots]\nId\tEnergy\tPos\n"
+	for i, r := range m.Robots {
+		str += fmt.Sprintf("%d\t%d\t%v\n", i, r.Energy, r.Pos)
+	}
+	return str
+}
+
 func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 	result := &Match{Grid: make([][]Cell, size)}
 	result.Genomes = make([]*waio.Genome, nb)
 	result.Robots = make([]*Robot, 0, nb)
-	energy := false
+	var energy bool
 
 	// Create Grid Cells and spawn energy
 	for i := range result.Grid {
 		result.Grid[i] = make([]Cell, size)
 		for j := range result.Grid[i] {
+			energy = false
 			if rand.Float64() < chance {
 				energy = true
+				result.Energy++
 			}
 			result.Grid[i][j] = Cell{
 				Energy: energy,
@@ -67,7 +101,7 @@ func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 
 	for i := 0; i < nb; i += 1 {
 		genome := &waio.Genome{}
-		*genome = *g
+		genome.Copy(g)
 		if c := rand.Float64(); c <= 0.5 {
 			genome.MutateAddNode()
 		} else {
@@ -119,7 +153,10 @@ func (m *Match) Update() {
 		r.Update()
 
 		// If there is energy on the current position, remove form cells
-		m.GetCell(r.Pos).Energy = false
+		if m.GetCell(r.Pos).Energy {
+			m.GetCell(r.Pos).Energy = false
+			m.Energy--
+		}
 
 		// If the energy depleted
 		if r.Energy > 0 {
@@ -136,7 +173,6 @@ func (m *Match) Update() {
 			// Remove robot from the list
 			m.Robots = SliceRemove(m.Robots, i)
 		}
-		i--
 	}
 
 	if len(m.Robots) == 1 {
