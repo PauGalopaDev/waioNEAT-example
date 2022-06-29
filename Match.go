@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 
 	waio "github.com/PauGalopaDev/waioNEAT"
 )
@@ -32,6 +31,7 @@ type Cell struct {
 }
 
 type Match struct {
+	Round   int
 	Grid    [][]Cell
 	Energy  int
 	Robots  []*Robot
@@ -78,6 +78,7 @@ func (m *Match) String() string {
 
 func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 	result := &Match{Grid: make([][]Cell, size)}
+	result.Round = 0
 	result.Genomes = make([]*waio.Genome, nb)
 	result.Robots = make([]*Robot, 0, nb)
 	var energy bool
@@ -87,7 +88,7 @@ func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 		result.Grid[i] = make([]Cell, size)
 		for j := range result.Grid[i] {
 			energy = false
-			if rand.Float64() < chance {
+			if waio.RndGen.Float64() < chance {
 				energy = true
 				result.Energy++
 			}
@@ -104,8 +105,8 @@ func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 	currentRobot.Match = result
 
 	// Set its position
-	currentRobot.Pos.i = rand.Intn(size)
-	currentRobot.Pos.j = rand.Intn(size)
+	currentRobot.Pos.i = waio.RndGen.Intn(size)
+	currentRobot.Pos.j = waio.RndGen.Intn(size)
 
 	// Set the grid cell robot marker as true
 	result.GetCell(currentRobot.Pos).Robot = true
@@ -113,7 +114,7 @@ func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 	for i := 0; i < nb; i += 1 {
 		genome := &waio.Genome{}
 		genome.Copy(g)
-		if c := rand.Float64(); c <= 0.5 {
+		if c := waio.RndGen.Float64(); c <= 0.5 {
 			genome.MutateAddNode()
 		} else {
 			genome.MutateAddSynapse()
@@ -124,12 +125,12 @@ func MakeMatch(size int, chance float64, g *waio.Genome, nb int) *Match {
 		currentRobot.Match = result
 
 		// Set its position
-		currentRobot.Pos.i = rand.Intn(size)
-		currentRobot.Pos.j = rand.Intn(size)
+		currentRobot.Pos.i = waio.RndGen.Intn(size)
+		currentRobot.Pos.j = waio.RndGen.Intn(size)
 
 		for result.GetCell(currentRobot.Pos).Robot {
-			currentRobot.Pos.i = rand.Intn(size)
-			currentRobot.Pos.j = rand.Intn(size)
+			currentRobot.Pos.i = waio.RndGen.Intn(size)
+			currentRobot.Pos.j = waio.RndGen.Intn(size)
 		}
 
 		// Set the grid cell robot marker as true
@@ -190,4 +191,5 @@ func (m *Match) Update() {
 		m.Genomes = append(m.Genomes, m.Robots[0].Genome)
 		m.Robots = SliceRemove(m.Robots, 0)
 	}
+	m.Round++
 }
