@@ -135,6 +135,7 @@ func (r *Robot) Rotate() {
 
 func (r *Robot) Update() {
 	// Set Inputs
+	*r.Inputs["bias"] = 1.0
 	r.Look()
 	r.EvalEnergy()
 

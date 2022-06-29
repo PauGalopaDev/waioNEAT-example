@@ -58,9 +58,20 @@ func (m *Match) String() string {
 	str += "\n"
 	str += fmt.Sprintf("Energy left:\t%d\n", m.Energy)
 	str += fmt.Sprintf("Robots left:\t%d\n", len(m.Robots))
-	str += "[Robots]\nId\tEnergy\tPos\n"
+	str += "[Robots]\nId\tEnergy\tPos\tRotation\n"
 	for i, r := range m.Robots {
-		str += fmt.Sprintf("%d\t%d\t%v\n", i, r.Energy, r.Pos)
+		d := "Error"
+		switch r.Dir {
+		case Up:
+			d = "UP"
+		case Right:
+			d = "RIGHT"
+		case Down:
+			d = "DOWN"
+		case Left:
+			d = "LEFT"
+		}
+		str += fmt.Sprintf("%d\t%d\t%v\t%s\n", i, r.Energy, r.Pos, d)
 	}
 	return str
 }

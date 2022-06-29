@@ -17,7 +17,7 @@ func main() {
 	waio.Init()
 
 	// Robot Params
-	ins := map[string]float64{"look": 1, "energy": 1}
+	ins := map[string]float64{"look": 1, "energy": 1, "bias": 1}
 	outs := map[string]float64{"move": 1, "rotleft": 1, "rotright": 1}
 
 	// Make Genome
@@ -39,3 +39,8 @@ func main() {
 		nMatch += 1
 	}
 }
+
+/*
+TODO:
+Add argument handling
+*/
