@@ -97,7 +97,7 @@ func (r *Robot) Move() {
 		tp.j += 1
 	}
 
-	if r.Match.PosOk(tp) && r.Match.Grid[tp.i][tp.j].Robot {
+	if r.Match.PosOk(tp) && r.Match.GetCell(tp).Robot {
 		return
 	}
 }
